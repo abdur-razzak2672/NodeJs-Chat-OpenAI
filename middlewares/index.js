@@ -1,5 +1,4 @@
-// middlewares/validatorMiddleware.js
-
+ const {verifyToken} = require('../controllers/auth.controller');
 exports.validateCreateStudent = (req, res, next) => {
     const { name, email, phone } = req.body;
   
@@ -19,4 +18,21 @@ exports.validateCreateStudent = (req, res, next) => {
   
     next();
   };
-  
+
+
+ 
+exports.authenticateUser = (req, res, next) => {
+  const token = req.headers.authorization;
+
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized - Missing Token' });
+  }
+
+  try {
+    const decodedToken = verifyToken(token);
+    req.userId = decodedToken.userId;
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: 'Unauthorized - Invalid Token' });
+  }
+};
